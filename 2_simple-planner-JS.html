@@ -1,0 +1,117 @@
+<script type="text/javascript">
+  (function ($) {
+    //Handles loading iFrame via top filter buttons
+    var $topFilter = $(".top-filters");
+    var plannerIframe = document.getElementById("planner"),
+      plannerURL = plannerIframe.src;
+    // checkedCount = 0;
+
+    //Updates Planner Button values to includes current date in proper planner format
+    function formatPlannerDate() {
+      var datePrefix = "&start=";
+      var formattedDateStr = datePrefix + formatDate(new Date());
+      // console.log(formattedDateStr);
+      return formattedDateStr;
+    }
+
+    //Builds date format used for planner URL
+    function formatDate(date) {
+      var monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+
+      var day = date.getDate();
+      var monthIndex = date.getMonth();
+      var year = date.getFullYear();
+
+      return monthNames[monthIndex] + "%20" + day + ",%20" + year;
+    }
+
+    //Updates Top Filter buttons to include the current date. Used to remove classes that only have an 'in progress or closed' session
+    $topFilter.each(function () {
+      var inputSrc = $(this).val();
+      inputSrc += formatPlannerDate();
+      $(this).val(inputSrc);
+    });
+
+    //Controls iframe and other page behavior whenever a top-filter button is clicked
+    $topFilter.change(function () {
+      var $this = $(this);
+      var printBtn = document.getElementById("printIframeBtn");
+
+      //Hides print button if visible
+      if (window.getComputedStyle(printBtn).display !== "none") {
+        printBtn.removeEventListener("click", clickToPrint.bind(this), false);
+        printBtn.setAttribute("style", "display: none;");
+      }
+
+      $(".lds-overlay").addClass("loading");
+
+      if ($this.is(":checked")) {
+        plannerIframe.src = $this.val();
+        // checkedCount++;
+      }
+      if (!$this.is(":checked")) {
+        plannerIframe.src = plannerURL;
+        // checkedCount--;
+      }
+      if ($(plannerIframe).hasClass("init")) {
+        $(plannerIframe).removeClass("init");
+        $("#planner").css("visibility", "visible");
+      }
+
+      //When the iframe has finished loading
+      $(plannerIframe).on("load", function () {
+        $(plannerIframe).height(0);
+        var $loadedDocument = $(plannerIframe).contents().find("body");
+        $(plannerIframe).height($loadedDocument.height()); //Set iframe height
+
+        // console.log($loadedDocument.height());
+
+        if ($loadedDocument.height() < 280) {
+          $(plannerIframe).height(0);
+          var newHeight = $loadedDocument.height() + 130;
+          $(plannerIframe).height(newHeight);
+          console.log(newHeight);
+        }
+
+        //Used to reveal the hidden print button
+        if (window.getComputedStyle(printBtn).display === "none") {
+          printBtn.setAttribute("style", "display: block;float: none;");
+          handlePrintBtn();
+          $(".lds-overlay").removeClass("loading");
+        }
+      });
+
+      //Handles printing
+      function clickToPrint() {
+        var iframe = plannerIframe;
+        var ifWin = iframe.contentWindow || iframe; //makes print call work for most browsers
+        ifWin.print();
+        return false;
+      }
+
+      //Used to stop clickToPrint function from auto firing
+      function printListener() {
+        clickToPrint();
+      }
+
+      //Stops duplicate eventListeners from being added to printBtn
+      function handlePrintBtn() {
+        printBtn.removeEventListener("click", printListener);
+        printBtn.addEventListener("click", printListener);
+      }
+    });
+  })(jQuery);
+</script>

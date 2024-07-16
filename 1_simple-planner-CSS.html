@@ -1,0 +1,180 @@
+<style type="text/css">
+  /** Page Specific Custom CSS - In page view **/
+  .ms-header__inner :not(:first-child) {
+      display: none;
+  }
+  .page-container {
+      min-height: 500px;
+  }
+  .input-hidden {
+      left: -9999px !important;
+      position: absolute !important;
+      text-indent: -9999px;
+  }
+
+  .top-filters:checked+label {
+      background: #1f6153;
+      color: #ffffff;
+  }
+  .simple-planner > .ms-hero {
+      background-color: #2C8976 !important;
+  }
+  @media (min-width: 50em) {
+      .ms-hero__body {
+          max-width: 55em;
+      }
+  }
+  .scrollable-area__section-item__inner {
+      padding: 0px;
+      line-height: 0px;
+  }
+  .ms-hero__description {
+      line-height: 1.85;
+  }
+  .mobile--only {
+      display: none;
+      visibility: hidden;
+  }
+  .btn--mb5 {
+      margin-bottom: 5px;
+  }
+  .simple-planner .btn--secondary:hover {
+      background-color: #f35a69;
+  }
+  @media (max-width: 50em) {
+      body {
+          background-color: #00a27e !important;
+      }
+      .page-container {
+          min-height: unset;
+      }
+      .simple-planner,
+      #printIframeBtn,
+      .global-footer,
+      #intro-text {
+          display: none;
+      }
+      .mobile--only {
+          display: block;
+          visibility: visible;
+      }
+      .centered {
+        position: fixed; /* or absolute */
+        top: 49%;
+        left: 50%;
+        /* bring your own prefixes */
+        transform: translate(-50%, -50%);
+        text-align: center;
+        width: 100%;
+        max-width: 70%;
+      }
+      .centered p {
+          color: #fff;
+      }
+      .centered .global-header__logo {
+          width: 85px;
+          height: 30px;
+      }
+  }
+
+  #printIframeBtn {
+      margin: -20px auto 0;
+      padding: 1.5em 1.7em;
+      max-width: 300px;
+      font-size: 1.25em;
+  }
+
+  @media (min-width: 50em) {
+
+  }
+  .lds-overlay {
+      display: none;
+      height: 0;
+  }
+  .lds-overlay.loading {
+      display: block;
+  }
+  .lds-overlay.loading {
+      content: "";
+      width: 100%;
+      background-color: rgb(68, 68, 68);
+      background: rgba(68, 68, 68, 0.54);
+      position: fixed;
+      z-index: 9999;
+      top: 0;
+      bottom: 0;
+      user-select: none;
+      height: 100%;
+  }
+
+  /** Spinner CSS **/
+
+  .lds-ellipsis {
+    display: inline-block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    position: fixed; /* or absolute */
+    top: 49%;
+    left: 50%;
+    /* bring your own prefixes */
+    -webkit-transform: translate(-50%, -50%);;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 99999;
+  }
+  .lds-ellipsis div {
+    position: absolute;
+    top: 27px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #fff;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+  }
+  .lds-ellipsis div:nth-child(1) {
+    left: 6px;
+    animation: lds-ellipsis1 0.6s infinite;
+  }
+  .lds-ellipsis div:nth-child(2) {
+    left: 6px;
+    animation: lds-ellipsis2 0.6s infinite;
+  }
+  .lds-ellipsis div:nth-child(3) {
+    left: 26px;
+    animation: lds-ellipsis2 0.6s infinite;
+  }
+  .lds-ellipsis div:nth-child(4) {
+    left: 45px;
+    animation: lds-ellipsis3 0.6s infinite;
+  }
+  @keyframes lds-ellipsis1 {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes lds-ellipsis3 {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(0);
+    }
+  }
+  @keyframes lds-ellipsis2 {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(19px, 0);
+    }
+  }
+
+
+
+  /** /Spinner CSS **
+</style>

@@ -1,0 +1,809 @@
+<div class="program-list u-tone-background-tint" id="iframeContents">
+  <section
+    id="simplePlanner"
+    list-type="class"
+    ng-cloak=""
+    ng-controller="ProductionListCtrl as vm"
+    ng-init="vm.init()"
+    planner-feed="/webservices/categoryproduction.svc/categories/json/allprograms"
+    promotions-feed="/webservices/planneradvert.svc/json"
+    promotions-frequency="10"
+  >
+    <div class="page-container u-tone-background-tint">
+      <div
+        class="ms-hero ms-hero--slim ms-hero--center ms-hero--inverted filter-ages"
+        style="background-image: url(); background-color: #f45b69"
+      >
+        <div class="ms-hero__inner keywords-group">
+          <div class="ms-hero__body">
+            <h1 class="ms-hero__title ms-hero__title--med">
+              {{ ::vm.filters[2].label }}
+            </h1>
+
+            <div class="ms-hero__description">
+              <span ng-repeat="facet in vm.filters[2].facets">
+                <label
+                  ng-class="facet.disabled &amp;&amp; 'filter-item__input--disabled'"
+                >
+                  <input
+                    class="filter-item__input--checkbox"
+                    ng-disabled="facet.disabled"
+                    ng-model="facet.checked"
+                    type="checkbox"
+                    value="{{ ::facet.keyword }}"
+                  />
+                  <span class="filter-item__keyword"
+                    >{{ ::facet.keyword }}</span
+                  >
+                </label> </span
+              ><button
+                class="keywords-group__clear"
+                ng-click="vm.clearFilter($event, vm.filters[2].category)"
+                type="button"
+              >
+                <icon name="cross" types="small offset"></icon> Clear
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--  <div class="filter-ages">
+            <fieldset class="keywords-group" ng-class="{'keywords-group--closed': !vm.filters[2].open, 'keywords-group--used': vm.filters[2].canClear, 'keywords-group--toggle': vm.filters[2].toggle}" ng-hide="!vm.filters[2].visible" ng-if="!vm.filters[2].custom">
+                <legend class="keywords-group__title" ng-click="vm.toggleFilter(group)">
+                    {{ ::vm.filters[2].label }}
+
+                    <button type="button" class="keywords-group__clear" ng-click="vm.clearFilter($event, vm.filters[2].category)">
+                        <icon name="cross" types="small offset"></icon> Clear
+                    </button>
+
+                    <span class="keywords-group__toggle">
+                        <icon name="minus"></icon>
+                        <icon name="plus"></icon>
+                    </span>
+                </legend>
+
+                
+                    <span ng-repeat="facet in vm.filters[2].facets" class="keywords-group__list-item">
+                       
+                            <label class="" ng-class="facet.disabled && 'filter-item__input--disabled'">
+                                <input class="filter-item__input--checkbox" type="checkbox" value="{{ ::facet.keyword }}" ng-model="facet.checked" ng-disabled="facet.disabled">
+
+                                <span class="filter-item__keyword">{{ ::facet.keyword }}</span>
+                            </label>
+                        
+                    </span>
+                
+            </fieldset>
+        </div> -->
+
+      <div class="filter-header">
+        <fieldset
+          class="keywords-group"
+          ng-class="{'keywords-group--single': group.visible &amp;&amp; vm.filters.length == 5 , 'keywords-group--closed': !group.open, 'keywords-group--used': group.canClear, 'keywords-group--toggle': group.toggle}"
+          ng-hide="!group.visible"
+          ng-if="!group.custom"
+          ng-repeat="group in vm.filters"
+        >
+          <legend
+            class="keywords-group__title"
+            ng-click="vm.toggleFilter(group)"
+          >
+            {{ ::group.label }}<button
+              class="keywords-group__clear"
+              ng-click="vm.clearFilter($event, group.category)"
+              type="button"
+            >
+              <icon name="cross" types="small offset"></icon> Clear
+            </button>
+            <span class="keywords-group__toggle">
+              <icon name="minus"></icon> <icon name="plus"></icon>
+            </span>
+          </legend>
+
+          <ul class="keywords-group__list">
+            <li
+              class="keywords-group__list-item"
+              ng-repeat="facet in group.facets"
+            >
+              <span class="filter-item">
+                <label
+                  class="filter-item__input"
+                  ng-class="facet.disabled &amp;&amp; 'filter-item__input--disabled'"
+                >
+                  <input
+                    class="filter-item__input--checkbox"
+                    ng-disabled="facet.disabled"
+                    ng-model="facet.checked"
+                    type="checkbox"
+                    value="{{ ::facet.keyword }}"
+                  />
+                  <span class="filter-item__keyword"
+                    >{{ ::facet.keyword }}</span
+                  >
+                </label>
+              </span>
+            </li>
+          </ul>
+        </fieldset>
+      </div>
+
+      <div class="section-header">
+        <div class="section-header__inner u-constrained">
+          <h1 class="section-header__title">{{ vm.totalCount }} results</h1>
+          <button
+            class="area-event-listing__filter btn btn--slim js-toggle"
+            data-toggle="program-filters"
+            data-toggle-body-fixed="true"
+          >
+            <icon name="filter" types="small offset"></icon> Filter
+          </button>
+
+          <div class="section-header__actions">
+            <div
+              class="event-list-switcher"
+              ng-if="::vm.currentViewIsEventOrDay"
+            >
+              <span
+                class="event-list-switcher__label"
+                ng-class="::vm.currentViewIsEvent &amp;&amp; 'event-list-switcher__label--disabled'"
+              >
+                Day Planner
+              </span>
+              <label class="event-list-switcher__switch">
+                <input
+                  class="u-visually-hidden"
+                  ng-checked="::vm.currentViewIsEvent"
+                  ng-model="vm.toggleView"
+                  ng-value-false="day"
+                  ng-value-true="event"
+                  type="checkbox"
+                />
+                <div class="event-list-switcher__slider"></div>
+              </label>
+              <span
+                class="event-list-switcher__label"
+                ng-class="::(!vm.currentViewIsEvent) &amp;&amp; 'event-list-switcher__label--disabled'"
+              >
+                Event List
+              </span>
+            </div>
+            <!--  <strong class="filter-results">{{ vm.totalCount }} results</strong> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="area-event-listing">
+        <div class="area-event-listing__keywords" id="program-filters">
+          <filters-loading ng-hide="!vm.loading"></filters-loading
+          ><button
+            class="area-event-listing__filter-close js-toggle"
+            data-toggle="program-filters"
+            data-toggle-body-fixed="true"
+          >
+            <icon
+              name="close"
+              ng-show="!vm.loading"
+              types="small offset"
+            ></icon>
+            close
+          </button>
+
+          <div class="area-event-listing__sticky" ng-show="!vm.loading">
+            <fieldset
+              class="u-hidden keywords-group keywords-group--search keywords-group--open"
+            >
+              <legend class="keywords-group__title u-visually-hidden">
+                Filter By Keyword
+              </legend>
+              <input
+                class="keywords-group__search"
+                ng-model="vm.keyword"
+                ng-model-options="{ debounce: 500 }"
+                placeholder="Filter by a keyword"
+                type="text"
+              />
+              <span class="keywords-group__helper"
+                >e.g. Artist, Title or Genre</span
+              >
+            </fieldset>
+
+            <fieldset
+              class="u-hidden keywords-group keywords-group--date-time"
+              ng-class="!vm.dateFilters.open &amp;&amp; 'keywords-group--closed'"
+            >
+              <legend
+                class="keywords-group__title"
+                ng-click="vm.toggleDateFilter()"
+              >
+                Filter by Day or Time<button
+                  class="keywords-group__clear"
+                  ng-click="vm.clearDateFilter($event)"
+                  ng-if="vm.dateFilters.canClear"
+                  type="button"
+                >
+                  <icon name="cross" types="small offset"></icon> Clear
+                </button>
+                <span class="keywords-group__toggle">
+                  <icon
+                    name="minus"
+                    ng-if="vm.dateFilters.open &amp;&amp; vm.dateFilters.toggle &amp;&amp; !vm.dateFilters.canClear"
+                  ></icon>
+                  <icon
+                    name="plus"
+                    ng-if="!vm.dateFilters.open &amp;&amp; vm.dateFilters.toggle &amp;&amp; !vm.dateFilters.canClear"
+                  ></icon>
+                </span>
+              </legend>
+
+              <div class="keywords-group__list keywords-group__list--noscroll">
+                <ul class="keywords-group__list keywords-group__list--date">
+                  <li class="keywords-group__list-item">
+                    <label class="keywords-group__date"
+                      ><input
+                        class="keywords-group__date-start"
+                        id="keywords-group__date-start"
+                        ng-click="vm.dateFilters.startCalendarFocus = true"
+                        ng-model="vm.dateFilters.range.start"
+                        placeholder="Starting"
+                        type="text"
+                      />
+                      <mighty-datepicker
+                        after="vm.firstEvent"
+                        before="vm.dateFilters.range.end"
+                        ng-model="vm.dateFilters.startSelected"
+                        ng-show="vm.dateFilters.startCalendarFocus"
+                        options="vm.dateFilters.options.start"
+                        range-from="true"
+                      ></mighty-datepicker>
+                    </label>
+                  </li>
+                  <li class="keywords-group__list-item">
+                    <label class="keywords-group__date"
+                      ><input
+                        class="keywords-group__date-end"
+                        id="keywords-group__date-end"
+                        ng-click="vm.dateFilters.endCalendarFocus = true"
+                        ng-model="vm.dateFilters.range.end"
+                        placeholder="Ending"
+                        type="text"
+                      />
+                      <mighty-datepicker
+                        after="vm.dateFilters.range.start"
+                        before="vm.lastEvent"
+                        ng-model="vm.dateFilters.endSelected"
+                        ng-show="vm.dateFilters.endCalendarFocus"
+                        options="vm.dateFilters.options.end"
+                        range-to="true"
+                      ></mighty-datepicker>
+                    </label>
+                  </li>
+                </ul>
+
+                <div
+                  ng-hide="!group.visible"
+                  ng-if="group.custom"
+                  ng-repeat="group in vm.filters"
+                >
+                  <h3 class="keywords-group__title">
+                    {{ ::group.label }}<button
+                      class="keywords-group__clear"
+                      ng-click="vm.clearFilter($event, group.category)"
+                      ng-if="group.canClear"
+                      type="button"
+                    >
+                      <icon name="cross" types="small offset"></icon> Clear
+                    </button>
+                  </h3>
+
+                  <ul class="keywords-group__list keywords-group__list--time">
+                    <li
+                      class="keywords-group__list-item"
+                      ng-repeat="facet in group.facets"
+                    >
+                      <span class="filter-item">
+                        <label
+                          ng-class="facet.disabled &amp;&amp; 'filter-item__input--disabled'"
+                        >
+                          <input
+                            class="filter-item__input--checkbox"
+                            ng-disabled="facet.disabled"
+                            ng-model="facet.checked"
+                            type="checkbox"
+                            value="{{ ::facet.keyword }}"
+                          />
+                          {{ ::facet.keyword }}
+                        </label>
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset
+              class="keywords-group"
+              ng-class="{'keywords-group--closed': !group.open, 'keywords-group--used': group.canClear, 'keywords-group--toggle': group.toggle}"
+              ng-hide="!group.visible"
+              ng-if="!group.custom"
+              ng-repeat="group in vm.filters"
+            >
+              <legend
+                class="keywords-group__title"
+                ng-click="vm.toggleFilter(group)"
+              >
+                {{ ::group.label }}<button
+                  class="keywords-group__clear"
+                  ng-click="vm.clearFilter($event, group.category)"
+                  type="button"
+                >
+                  <icon name="cross" types="small offset"></icon> Clear
+                </button>
+                <span class="keywords-group__toggle">
+                  <icon name="minus"></icon> <icon name="plus"></icon>
+                </span>
+              </legend>
+
+              <ul class="keywords-group__list">
+                <li
+                  class="keywords-group__list-item"
+                  ng-repeat="facet in group.facets"
+                >
+                  <span class="filter-item">
+                    <label
+                      class="filter-item__input"
+                      ng-class="facet.disabled &amp;&amp; 'filter-item__input--disabled'"
+                    >
+                      <input
+                        class="filter-item__input--checkbox"
+                        ng-disabled="facet.disabled"
+                        ng-model="facet.checked"
+                        type="checkbox"
+                        value="{{ ::facet.keyword }}"
+                      />
+                      <span class="filter-item__keyword"
+                        >{{ ::facet.keyword }}</span
+                      >
+                    </label>
+                  </span>
+                </li>
+              </ul>
+            </fieldset>
+          </div>
+        </div>
+        <!-- Day Planner View -->
+
+        <div class="area-event-listing_events" ng-if="::vm.currentViewIsDay">
+          <p class="message" ng-if="!vm.results.length &amp;&amp; !vm.loading">
+            No results
+          </p>
+          <cards-loading ng-hide="!vm.loading"></cards-loading>
+
+          <section
+            class="event-grouping"
+            ng-if="vm.results.length"
+            ng-repeat="group in vm.results"
+            ng-show="!vm.loading"
+          >
+            <promotion-card
+              promotion="vm.promotedPromotion($index)"
+            ></promotion-card>
+
+            <h2 class="event-grouping__title" ng-bind-html="group.label"></h2>
+
+            <div class="event-grouping__content">
+              <div
+                class="event-card event-card--performance is-type-{{ ::item.type }}"
+                ng-class="item.is_open &amp;&amp; 'event-card--featured'"
+                ng-repeat="item in group.items"
+              >
+                <header
+                  class="event-card__header has-time"
+                  ng-click="item.is_open = !item.is_open"
+                >
+                  <span class="event-card__time"
+                    >{{ ::item.start_date_moment.format(&#39;h:mma&#39;)
+                    }}</span
+                  >
+
+                  <div class="event-card__details">
+                    <span class="event-card__prefix" ng-if="::item.prefix"
+                      >{{ ::item.prefix }}</span
+                    >
+
+                    <h3
+                      class="event-card__title"
+                      ng-bind-html="::item.title"
+                    ></h3>
+                    <span class="event-card__suffix" ng-if="::item.suffix"
+                      >{{ ::item.suffix }}</span
+                    >
+                  </div>
+                  <span class="event-card__toggle">
+                    <icon name="chevron-up"></icon>
+                    <icon name="chevron-down"></icon>
+                  </span>
+                </header>
+
+                <div
+                  class="event-card__content"
+                  ng-class="{'event-card__has-book-image': item.book_cover_image_url, 'event-card__has-image': item.book_cover_image_url || item.main_image_url}"
+                >
+                  <div
+                    class="event-card__image"
+                    ng-if="::item.displayImage &amp;&amp; (item.book_cover_image_url || item.main_image_url)"
+                  >
+                    <img
+                      alt="{{ ::item.title }}"
+                      ng-src="{{ ::(item.book_cover_image_url || item.main_image_url) }}"
+                    />
+                  </div>
+
+                  <div class="event-card__body">
+                    <p
+                      class="event-card__description"
+                      ng-bind-html="::item.short_description"
+                      ng-if="::item.short_description"
+                    ></p>
+
+                    <div class="event-card__cta button-group">
+                      <a
+                        book-button=""
+                        class="btn"
+                        href="/tickets/BookingPanelFrame.aspx?performancenumber={{ ::item.perf_no }}"
+                        ng-if="::item.show_book_button"
+                        perf-no="{{ ::item.perf_no }}"
+                        >Buy Tickets</a
+                      >
+                      <a
+                        class="btn btn--secondary"
+                        ng-href="{{ ::item.event_url }}"
+                        >More info</a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <promotion-card
+              promotion="vm.standardPromotion($index)"
+            ></promotion-card>
+          </section>
+        </div>
+        <!-- Event List View -->
+
+        <div class="area-event-listing_events" ng-if="::vm.currentViewIsEvent">
+          <p class="message" ng-if="!vm.results.length &amp;&amp; !vm.loading">
+            No results
+          </p>
+          <cards-loading ng-hide="!vm.loading"></cards-loading>
+
+          <section
+            class="event-grouping"
+            ng-if="vm.results.length"
+            ng-show="!vm.loading"
+          >
+            <div class="event-grouping__content" ng-repeat="item in vm.results">
+              <div class="event-grouping__promotion">
+                <promotion-card
+                  promotion="vm.promotedPromotion($index)"
+                ></promotion-card>
+              </div>
+
+              <div
+                class="event-card is-type-{{ ::item.type }}"
+                ng-class="item.is_open &amp;&amp; 'event-card--featured'"
+              >
+                <header
+                  class="event-card__header"
+                  ng-click="item.is_open = !item.is_open"
+                >
+                  <div class="event-card__details">
+                    <span class="event-card__prefix" ng-if="::item.prefix"
+                      >{{ ::item.prefix }}</span
+                    >
+
+                    <h3
+                      class="event-card__title"
+                      ng-bind-html="::item.title"
+                    ></h3>
+                    <span class="event-card__suffix" ng-if="::item.suffix"
+                      >{{ ::item.suffix }}</span
+                    >
+                  </div>
+                  <span class="event-card__toggle">
+                    <icon name="chevron-up"></icon>
+                    <icon name="chevron-down"></icon>
+                  </span>
+                </header>
+
+                <div class="event-card__content">
+                  <div
+                    class="event-card__image"
+                    ng-if="::item.displayImage &amp;&amp; item.main_image_url"
+                  >
+                    <img
+                      alt="{{ ::item.title }}"
+                      ng-src="{{ ::item.main_image_url }}"
+                    />
+                  </div>
+
+                  <div class="event-card__body">
+                    <p
+                      class="event-card__description"
+                      ng-bind-html="::item.short_description"
+                      ng-if="::item.short_description"
+                    ></p>
+
+                    <div class="event-card__cta button-group">
+                      <a
+                        class="btn btn--secondary"
+                        ng-href="{{ ::item.event_url }}"
+                        >More info</a
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="event-card__performances">
+                  <table class="program-table">
+                    <thead class="program-table__header">
+                      <tr class="program-table__line-item">
+                        <th>Date</th>
+                        <th>Price</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody class="program-table__body">
+                      <tr
+                        class="program-table__line-item"
+                        ng-repeat="performance in ::item.performances"
+                      >
+                        <td class="program-table__date">
+                          {{ ::performance.perf_start_to_end }}
+                        </td>
+                        <td class="program-table__price">
+                          from {{ ::performance.lowest_price }}
+                        </td>
+                        <td class="program-table__book">
+                          <a
+                            book-button=""
+                            class="btn"
+                            href="/tickets/BookingPanelFrame.aspx?performancenumber={{ ::performance.perf_no }}"
+                            ng-if="::performance.show_book_button"
+                            perf-no="{{ ::performance.perf_no }}"
+                            >Buy Tickets</a
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="event-grouping__promotion">
+                <promotion-card
+                  promotion="vm.standardPromotion($index)"
+                ></promotion-card>
+              </div>
+            </div>
+          </section>
+        </div>
+        <!-- Class View -->
+
+        <div class="area-event-listing_events" ng-if="::vm.currentViewIsClass">
+          <p class="message" ng-if="!vm.results.length &amp;&amp; !vm.loading">
+            No results
+          </p>
+          <cards-loading ng-hide="!vm.loading"></cards-loading>
+
+          <section
+            class="event-grouping"
+            ng-if="vm.results.length"
+            ng-show="!vm.loading"
+          >
+            <div class="event-grouping__content" ng-repeat="item in vm.results">
+              <div class="event-grouping__promotion">
+                <promotion-card
+                  promotion="vm.promotedPromotion($index)"
+                ></promotion-card>
+              </div>
+
+              <div
+                class="event-card is-type-{{ ::item.type }}"
+                ng-class="item.is_open &amp;&amp; 'event-card--featured'"
+              >
+                <header
+                  class="event-card__header"
+                  ng-click="item.is_open = !item.is_open"
+                >
+                  <div class="event-card__details">
+                    <span
+                      class="event-card__prefix"
+                      ng-if="::item.prefix"
+                      ng-bind-html="::item.prefix"
+                    ></span>
+                    <h3
+                      class="event-card__title"
+                      ng-bind-html="::item.title"
+                    ></h3>
+                    <span
+                      class="event-card__suffix"
+                      ng-if="::item.suffix"
+                      ng-bind-html="::item.suffix"
+                    ></span>
+                  </div>
+                  <span class="event-card__toggle">
+                    <icon name="chevron-up"></icon>
+                    <icon name="chevron-down"></icon>
+                  </span>
+                </header>
+
+                <div class="event-card__content">
+                  <div
+                    class="event-card__image"
+                    ng-if="::item.displayImage &amp;&amp; item.main_image_url"
+                  >
+                    <img
+                      alt="{{ ::item.title }}"
+                      ng-src="{{ ::item.main_image_url }}"
+                    />
+                  </div>
+
+                  <div class="event-card__body">
+                    <p
+                      class="event-card__description"
+                      ng-bind-html="::item.short_description"
+                      ng-if="::item.short_description"
+                    ></p>
+
+                    <div
+                      class="program-instructors"
+                      ng-if="::item.instructors.length"
+                    >
+                      <p class="program-instructors__label">Instructors:</p>
+
+                      <ul class="program-instructors__list">
+                        <li
+                          class="program-instructors__item"
+                          ng-repeat="instructor in ::item.instructors"
+                        >
+                          {{ ::instructor }}
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div class="event-card__cta button-group">
+                      <a
+                        class="btn btn--secondary"
+                        ng-href="{{ ::item.event_url }}"
+                        >More info</a
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="event-card__performances">
+                  <table class="program-table">
+                    <thead class="program-table__header">
+                      <tr class="program-table__line-item">
+                        <th>Day</th>
+                        <th>Start Date</th>
+                        <th>Sessions</th>
+                        <th>Price</th>
+                        <th ng-show="::item.instructors.length">Instructor</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      class="program-table__body"
+                      ng-if="::item.classes_not_in_session.length"
+                    >
+                      <tr
+                        class="program-table__line-item"
+                        ng-repeat="performance in ::item.classes_not_in_session"
+                      >
+                        <td>{{ ::performance.days_of_week }}</td>
+                        <td>{{ ::performance.perf_start_to_end }}</td>
+                        <td>{{ ::performance.number_of_sessions }}</td>
+                        <td>{{ ::performance.lowest_price }}</td>
+                        <td ng-show="::item.instructors.length">
+                          {{ ::performance.instructors }}
+                        </td>
+                        <td>
+                          <a
+                            book-button=""
+                            class="btn"
+                            href="/tickets/BookingPanelFrame.aspx?performancenumber={{ ::performance.perf_no }}"
+                            ng-if="::performance.show_book_button"
+                            perf-no="{{ ::performance.perf_no }}"
+                            >Register</a
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody
+                      class="program-table__body"
+                      ng-if="::item.classes_in_session.length"
+                    >
+                      <tr>
+                        <td class="program-table__line-item-title" colspan="6">
+                          Currently in session
+                        </td>
+                      </tr>
+                      <tr
+                        class="program-table__line-item"
+                        ng-repeat="performance in ::item.classes_in_session"
+                      >
+                        <td>{{ ::performance.days_of_week }}</td>
+                        <td>{{ ::performance.perf_start_to_end }}</td>
+                        <td>{{ ::performance.number_of_sessions }}</td>
+                        <td>{{ ::performance.lowest_price }}</td>
+                        <td ng-show="::item.instructors.length">
+                          {{ ::performance.instructors }}
+                        </td>
+                        <td
+                          class="program-table__line-item-status"
+                          ng-bind-html="::performance.perf_status_description"
+                        ></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="event-grouping__promotion">
+                <promotion-card
+                  promotion="vm.standardPromotion($index)"
+                ></promotion-card>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script type="text/json" id="json-EventListConfig">
+    {
+      "CARD_CONFIG": [
+        {
+          "displayImage": false,
+          "openCard": true
+        }
+      ],
+      "FACET_PRESELECT_CONFIG": [],
+      "FACET_CONFIG": [
+        {
+          "label": "Filter By Time",
+          "category": "mm_time_search",
+          "custom": true,
+          "visible": false
+        },
+        {
+          "label": "Filter By Day",
+          "category": "mm_day_search",
+          "custom": true
+        },
+        {
+          "label": "Filter By Age",
+          "category": "10b_dd_AgeYears",
+          "open": true,
+          "toggle": false
+        },
+        {
+          "label": "Jewelry",
+          "category": "100_Classes",
+          "open": true,
+          "toggle": true,
+          "visible": false
+        },
+        {
+          "label": "Jewelry",
+          "category": "200_C_Jewelry",
+          "open": true,
+          "toggle": false,
+          "visible": true
+        }
+      ]
+    }
+  </script>
+</div>
